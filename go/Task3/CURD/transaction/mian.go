@@ -3,50 +3,78 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-type Student struct {
+type Account struct {
 	gorm.Model
-	Name  string
-	Age   uint8
-	Grade string
+	Balance float64
+}
+type Transaction struct {
+	gorm.Model
+	FromAccountId int
+	ToAccountId   int
+	Amount        float64
 }
 
 func main() {
 	dsn := "root:123456@tcp(127.0.0.1:3306)/learn?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		fmt.Println(err)
+	db, dberr := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if dberr != nil {
+		fmt.Println(dberr)
 		panic("数据库链接失败")
 	}
 
-	db.AutoMigrate(&Student{})
+	db.AutoMigrate(&Account{})
+	db.AutoMigrate(&Transaction{})
+
+	//添加账号和余额
 	ctx := context.Background()
-	//题目1：基本CRUD操作
-	//添加张三
-	err = gorm.G[any](db).Exec(ctx, "insert into students(name, age, grade) values(?,?,?)", "张三", 20, "三年级")
-	if err == nil {
-		fmt.Println("添加成功")
-	} else {
-		fmt.Println(err)
-	}
-	//查询大于18岁的学生
-	var students []Student
-	students, _ = gorm.G[Student](db).Raw("select * from students where age > ?", 14).Find(ctx)
-	fmt.Println("找到", len(students), "个大于18岁的学生")
+	// gorm.G[Account](db).Create(ctx, &Account{Balance: 150})
+	// gorm.G[Account](db).Create(ctx, &Account{Balance: 10})
 
-	//叫张三的更新为四年级
-	err = gorm.G[any](db).Exec(ctx, "update students set grade=? where name = ?", "四年级", "张三")
-	if err == nil {
-		fmt.Println("更新成功")
+	//开始转账
+	amount := float64(100)
+	tx := db.Begin()
+	defer func() {
+		if recover() != nil {
+			tx.Rollback()
+		}
+	}()
+	accountA, err1 := gorm.G[Account](tx).Raw("select * from accounts where id = ?", 1).First(ctx)
+	accountB, err2 := gorm.G[Account](tx).Raw("select * from accounts where id = ?", 2).First(ctx)
+	if err1 != nil || err2 != nil {
+		fmt.Println("账号错误")
+		return
 	}
-
-	//删除小与15的学生
-	err = gorm.G[any](db).Exec(ctx, "delete from students where age < ?", 15)
-	if err == nil {
-		fmt.Println("删除成功")
+	if accountA.Balance < amount {
+		fmt.Println("账户1余额不足")
+		return
 	}
+	err := gorm.G[any](tx).Exec(ctx, "update accounts set balance = balance - ? where id = ?", amount, accountA.ID)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("更改账户1余额失败")
+		return
+	}
+	fmt.Println("账户1扣款成功")
+	err = gorm.G[any](tx).Exec(ctx, "update accounts set balance = balance + ? where id = ?", amount, accountB.ID)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("更改账户2余额失败")
+		return
+	}
+	fmt.Println("账户2加钱成功")
+	err = gorm.G[any](tx).Exec(ctx, "insert into transactions(from_account_id, to_account_id, amount, created_at) values(?,?,?,?)",
+		accountA.ID, accountB.ID, amount, time.Now())
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("创建交易记录失败")
+		return
+	}
+	fmt.Println("交易成功")
+	tx.Commit()
 }
