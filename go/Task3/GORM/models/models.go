@@ -6,9 +6,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Name    string
-	Posts   []Post
-	Comment []Comment
+	Name     string
+	Posts    []Post
+	Comments []Comment
 }
 type Post struct {
 	gorm.Model

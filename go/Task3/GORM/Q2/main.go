@@ -15,44 +15,18 @@ func main() {
 		fmt.Println("链接数据库失败")
 		return
 	}
-
-	user1 := models.User{
-		Name: "wang",
-		Posts: []models.Post{
-			{Title: "富强民主文明和谐1", Content: "社会主义核心价值观：", Comments: []models.Comment{
-				{Content: "非常好1"},
-			}},
-			{Title: "富强民主文明和谐2", Content: "社会主义核心价值观：", Comments: []models.Comment{
-				{Content: "非常好1"}, {Content: "非常好3"}, {Content: "非常好2"},
-			}},
-			{Title: "富强民主文明和谐3", Content: "社会主义核心价值观：", Comments: []models.Comment{
-				{Content: "非常好1"}, {Content: "非常好3"},
-			}},
-			{Title: "富强民主文明和谐4", Content: "社会主义核心价值观：", Comments: []models.Comment{}},
-		},
-	}
-	user2 := models.User{
-		Name: "wang",
-		Posts: []models.Post{
-			{Title: "富强民主文明和谐5", Content: "社会主义核心价值观：", Comments: []models.Comment{
-				{Content: "非常好1"},
-			}},
-			{Title: "富强民主文明和谐6", Content: "社会主义核心价值观：", Comments: []models.Comment{
-				{Content: "非常好1"}, {Content: "非常好3"}, {Content: "非常好2"},
-			}},
-			{Title: "富强民主文明和谐7", Content: "社会主义核心价值观：", Comments: []models.Comment{
-				{Content: "非常好1"}, {Content: "非常好3"},
-			}},
-			{Title: "富强民主文明和谐8", Content: "社会主义核心价值观：", Comments: []models.Comment{}},
-		},
-	}
 	ctx := context.Background()
-	err := gorm.G[models.User](db).Create(ctx, &user1)
+
+	//编写Go代码，使用Gorm查询某个用户发布的所有文章及其对应的评论信息。
+	user, err := gorm.G[models.User](db).Preload("Posts", nil).Preload("Posts.Comments", nil).Where("id = ?", 1).First(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = gorm.G[models.User](db).Create(ctx, &user2)
-	if err != nil {
-		fmt.Println(err)
+	fmt.Println("用户", user.Name, "有", len(user.Posts), "篇博客")
+	for _, p := range user.Posts {
+		fmt.Println(p.Title, "有", len(p.Comments), "个评论")
 	}
+
+	//后去评论最多的文章信息
+	gorm.G[models.Post](db).Joins("")
 }
