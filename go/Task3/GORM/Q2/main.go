@@ -9,6 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
+type PostWithCount struct {
+	models.Post
+	CommentCount int
+}
+
 func main() {
 	db := common.GetDB()
 	if db == nil {
@@ -18,7 +23,7 @@ func main() {
 	ctx := context.Background()
 
 	//编写Go代码，使用Gorm查询某个用户发布的所有文章及其对应的评论信息。
-	user, err := gorm.G[models.User](db).Preload("Posts", nil).Preload("Posts.Comments", nil).Where("id = ?", 1).First(ctx)
+	user, err := gorm.G[models.User](db).Preload("Posts", nil).Preload("Posts.Comments", nil).First(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -26,7 +31,14 @@ func main() {
 	for _, p := range user.Posts {
 		fmt.Println(p.Title, "有", len(p.Comments), "个评论")
 	}
+	var pc PostWithCount
+	//获取评论最多的文章信息
+	db.Debug().Table("posts as p").
+		Select("p.*, count(c.id) as comment_count").
+		Joins("left join comments c on p.id = c.post_id").
+		Group("p.id").
+		Order("comment_count desc").
+		First(&pc)
 
-	//后去评论最多的文章信息
-	gorm.G[models.Post](db).Joins("")
+	fmt.Printf("%s 有最多的评论，共%d条评论", pc.Title, pc.CommentCount)
 }
