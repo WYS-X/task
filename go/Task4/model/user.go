@@ -13,4 +13,6 @@ type User struct {
 
 	Posts   []Post
 	Comment []Comment
+
+	PostCount int
 }
