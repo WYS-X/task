@@ -8,4 +8,6 @@ type Post struct {
 	Content      string `gorm:"not null"`
 	ViewCount    int
 	CommentCount int
+	UserID       int
+	User         User
 }
