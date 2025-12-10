@@ -15,6 +15,10 @@ func Init(db *gorm.DB) {
 
 	userService := service.NewUserService(db)
 
+	router.GET("/", func(c *gin.Context) {
+		c.String(200, "hello")
+	})
+
 	group1 := router.Group("/api/v1")
 	{
 		group1.POST("/register", userService.Register)
@@ -26,4 +30,5 @@ func Init(db *gorm.DB) {
 		//文章
 		//评论
 	}
+	router.Run(":8080")
 }
