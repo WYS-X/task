@@ -53,7 +53,7 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userId", claims["id"].(int))
+		c.Set("userId", int(claims["id"].(float64)))
 		c.Set("nickname", claims["nickname"].(string))
 		c.Next()
 	}
