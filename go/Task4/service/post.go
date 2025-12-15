@@ -25,7 +25,7 @@ type postCreateModel struct {
 func (s *postService) AddPost(c *gin.Context) {
 	var p postCreateModel
 	if err := c.ShouldBind(&p); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
@@ -38,7 +38,7 @@ func (s *postService) AddPost(c *gin.Context) {
 		Content: p.Content,
 	}
 	if err := s.DB.Create(&post).Error; err != nil {
-		c.JSON(http.StatusCreated, gin.H{
+		c.AbortWithStatusJSON(http.StatusCreated, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
@@ -53,14 +53,14 @@ func (s *postService) AddPost(c *gin.Context) {
 func (s *postService) GetPost(c *gin.Context) {
 	var post model.Post
 	if err := c.ShouldBindUri(&post); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
 		return
 	}
 	if err := s.DB.Preload("User").First(&post).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "文章不存在",
 		})
@@ -71,7 +71,7 @@ func (s *postService) GetPost(c *gin.Context) {
 func (s *postService) UpdatePost(c *gin.Context) {
 	var post model.Post
 	if err := c.ShouldBindUri(&post); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
@@ -79,7 +79,7 @@ func (s *postService) UpdatePost(c *gin.Context) {
 	}
 	var postContent postCreateModel
 	if err := c.ShouldBind(&postContent); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
@@ -90,7 +90,7 @@ func (s *postService) UpdatePost(c *gin.Context) {
 	post.Content = postContent.Content
 	postResult := s.DB.Model(&post).Where("user_id = ?", userID).Updates(post)
 	if postResult.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "文章不存在",
 		})
@@ -104,7 +104,7 @@ func (s *postService) UpdatePost(c *gin.Context) {
 func (s *postService) DeletePost(c *gin.Context) {
 	var post model.Post
 	if err := c.ShouldBindUri(&post); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
@@ -113,7 +113,7 @@ func (s *postService) DeletePost(c *gin.Context) {
 	userID := c.GetInt("userId")
 	postResult := s.DB.Model(&post).Where("user_id = ?", userID).Delete(&post)
 	if postResult.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "文章不存在",
 		})
@@ -139,7 +139,7 @@ type pagePostResult struct {
 func (s *postService) GetPosts(c *gin.Context) {
 	var pagePost pagePost
 	if err := c.ShouldBindQuery(&pagePost); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})

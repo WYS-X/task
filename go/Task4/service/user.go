@@ -34,7 +34,7 @@ func (s *userService) Register(c *gin.Context) {
 	fmt.Println("in register")
 	var regModel registerModel
 	if err := c.ShouldBind(&regModel); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": err.Error(),
 		})
@@ -42,7 +42,7 @@ func (s *userService) Register(c *gin.Context) {
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(regModel.Password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"code":    1,
 			"message": err.Error(),
 		})
@@ -50,7 +50,7 @@ func (s *userService) Register(c *gin.Context) {
 	}
 	user := model.User{Nickname: regModel.Nickname, Email: regModel.Email, Password: string(hashedPassword)}
 	if err := s.DB.Create(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"code":    1,
 			"message": err.Error(),
 		})
@@ -61,7 +61,7 @@ func (s *userService) Register(c *gin.Context) {
 func (s *userService) Login(c *gin.Context) {
 	var loginModel loginModel
 	if err := c.ShouldBind(&loginModel); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": err.Error(),
 		})
@@ -70,14 +70,14 @@ func (s *userService) Login(c *gin.Context) {
 
 	var user model.User
 	if err := s.DB.Where("email = ?", loginModel.Email).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"code":    1,
 			"message": err.Error(),
 		})
 		return
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginModel.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"code":    1,
 			"message": "密码错误",
 		})
@@ -90,7 +90,7 @@ func (s *userService) Login(c *gin.Context) {
 	})
 	tokenString, err := token.SignedString([]byte("xblog"))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"code":    1,
 			"message": "生成token失败",
 		})

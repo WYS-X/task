@@ -12,7 +12,7 @@ func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code":    1,
 				"message": "未登录",
 			})
@@ -22,14 +22,14 @@ func Auth() gin.HandlerFunc {
 			return []byte("xblog"), nil
 		})
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code":    1,
 				"message": "令牌错误",
 			})
 			return
 		}
 		if !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code":    1,
 				"message": "签名无效",
 			})
@@ -39,14 +39,14 @@ func Auth() gin.HandlerFunc {
 		claims := token.Claims.(jwt.MapClaims)
 		if exp, ok := claims["expire"].(float64); ok {
 			if time.Now().Unix() > int64(exp) {
-				c.JSON(http.StatusUnauthorized, gin.H{
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 					"code":    1,
 					"message": "令牌过期",
 				})
 				return
 			}
 		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code":    1,
 				"message": "时间戳无效",
 			})
