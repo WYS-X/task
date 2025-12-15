@@ -48,19 +48,11 @@
 
 ```text
 blog-backend
-├── cmd/
-│   └── main.go
-├── config/
-│   └── config.yaml
-├── internal/
-│   ├── controller/
-│   ├── service/
-│   ├── model/
-│   ├── middleware/
-│   └── router/
-├── pkg/
-│   ├── jwt/
-│   └── logger/
+├── db
+├── log
+├── model
+├── service
+├── main.go
 ├── go.mod
 └── README.md
 ```
