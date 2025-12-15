@@ -26,7 +26,7 @@ type commentCreateModel struct {
 func (s *postService) AddComment(c *gin.Context) {
 	var p commentCreateModel
 	if err := c.ShouldBind(&p); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
@@ -39,7 +39,7 @@ func (s *postService) AddComment(c *gin.Context) {
 		Content: p.Content,
 	}
 	if err := s.DB.Create(&comment).Error; err != nil {
-		c.JSON(http.StatusCreated, gin.H{
+		c.AbortWithStatusJSON(http.StatusCreated, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
@@ -67,14 +67,14 @@ func (s *postService) GetPostComments(c *gin.Context) {
 	var pagePost commentPost
 	postId, perr := strconv.Atoi(c.Param("ID"))
 	if perr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})
 		return
 	}
 	if err := c.ShouldBindQuery(&pagePost); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    1,
 			"message": "参数错误",
 		})

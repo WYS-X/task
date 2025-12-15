@@ -1,0 +1,11 @@
+{"level":"info","ts":1765811972.6073465,"caller":"Task4/main.go:14","msg":"start"}
+{"level":"info","ts":1765811974.12575,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post/3/comment?page=1&size=10","ip":"127.0.0.1","cost":0.000503}
+{"level":"info","ts":1765811979.6595352,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post/3/comment?page=1&size=10","ip":"127.0.0.1","cost":0}
+{"level":"info","ts":1765812080.9204514,"caller":"Task4/main.go:14","msg":"start"}
+{"level":"info","ts":1765812088.449069,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post/3/comment?page=1&size=10","ip":"127.0.0.1","cost":0.0005448}
+{"level":"info","ts":1765812091.2929392,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post/3/comment?page=1&size=10","ip":"127.0.0.1","cost":0}
+{"level":"info","ts":1765812092.6289573,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post/3/comment?page=1&size=10","ip":"127.0.0.1","cost":0}
+{"level":"info","ts":1765812094.099181,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post/3/comment?page=1&size=10","ip":"127.0.0.1","cost":0}
+{"level":"info","ts":1765812097.773938,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post?page=1&size=10&userId=4","ip":"127.0.0.1","cost":0}
+{"level":"info","ts":1765812100.4179704,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post/3/comment?page=1&size=10","ip":"127.0.0.1","cost":0}
+{"level":"info","ts":1765812106.7510097,"caller":"router/router.go:58","msg":"http_request","status":401,"method":"GET","path":"/api/v1/post/3/comment?page=1&size=10","ip":"127.0.0.1","cost":0}
